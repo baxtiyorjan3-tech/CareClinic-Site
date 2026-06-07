@@ -2,6 +2,8 @@ import { Link, Route, Routes } from "react-router-dom";
 import Hero from "./pages/Hero.jsx";
 import { useUser } from "@clerk/clerk-react";
 import Home from "./pages/Home"; // Fixed import path
+import Add from "./pages/Add.jsx";
+import List from "./pages/List.jsx";
 
 function RequireAuth({ children }) {
   const { isLoaded, isSignedIn } = useUser();
@@ -40,6 +42,24 @@ const App = () => {
         element={
           <RequireAuth>
             <Home />
+          </RequireAuth>
+        }
+      />
+
+      <Route
+        path="/add"
+        element={
+          <RequireAuth>
+            <Add />
+          </RequireAuth>
+        }
+      />
+
+      <Route
+        path="/list"
+        element={
+          <RequireAuth>
+            <List />
           </RequireAuth>
         }
       />
