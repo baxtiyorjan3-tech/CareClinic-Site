@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { navbarStyles } from "../assets/dummyStyles";
 import { useLocation, useNavigate, Link } from "react-router-dom";
-const STORAGE_KEY = "doctorToken_v1";
 import logo from "../assets/logo.png";
 import { SignedIn, SignedOut, useClerk, UserButton } from "@clerk/clerk-react";
 import { Key, Menu, User, X } from "lucide-react";
+
+const STORAGE_KEY = "doctorToken_v1";
+
+
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
