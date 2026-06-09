@@ -1,6 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { doctorsPageStyles } from "../assets/dummyStyles.js";
-import { Search, X } from "lucide-react";
+import {
+  ChevronRight,
+  CircleChevronDown,
+  CircleChevronUp,
+  Medal,
+  MousePointer2Off,
+  Search,
+  X,
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
 const DoctorsPage = () => {
   const API_BASE = "http://localhost:4000";
@@ -182,8 +191,161 @@ const DoctorsPage = () => {
           </div>
         )}
 
+        {loading ? (
+          <div className={doctorsPageStyles.skeletonGrid}>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className={doctorsPageStyles.skeletonCard}>
+                <div className={doctorsPageStyles.skeletonImage}></div>
+                <div className={doctorsPageStyles.skeletonName}></div>
+                <div className={doctorsPageStyles.skeletonSpecialization}></div>
+                <div className={doctorsPageStyles.skeletonButton}></div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div
+            className={`${doctorsPageStyles.doctorsGrid} ${
+              filteredDoctors.length === 0 ? "opacity-70" : "opacity-100"
+            }`}
+          >
+            {displayedDoctors.length > 0 ? (
+              displayedDoctors.map((doctor, index) => (
+                <div
+                  key={doctor.id || `${doctor.name}-${index}`}
+                  className={`${doctorsPageStyles.doctorCard} ${!doctor.available ? doctorsPageStyles.doctorCardUnavailable : ""}`}
+                  style={{ animationDelay: `${index * 90}ms` }}
+                  role="article"
+                >
+                  {doctor.available ? (
+                    <Link
+                      to={`/doctors/${doctor.id}`}
+                      state={{ doctor: doctor.raw || doctor }}
+                      className={doctorsPageStyles.focusRing}
+                    >
+                      <div className={doctorsPageStyles.imageContainer}>
+                        <img
+                          src={doctor.image || "/placeholder-doctor.jpg"}
+                          alt={doctor.name}
+                          loading="lazy"
+                          className={doctorsPageStyles.doctorImage}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = "/placeholder-doctor.jpg";
+                          }}
+                        />
+                      </div>
+                    </Link>
+                  ) : (
+                    <div
+                      className={`${doctorsPageStyles.imageContainer} ${doctorsPageStyles.imageContainerUnavailable}`}
+                    >
+                      <img
+                        src={doctor.image || "/placeholder-doctor.jpg"}
+                        alt={doctor.name}
+                        loading="lazy"
+                        className={doctorsPageStyles.doctorImageUnavailable}
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = "/placeholder-doctor.jpg";
+                        }}
+                      />
+                    </div>
+                  )}
+                  <h3 className={doctorsPageStyles.doctorName}>
+                    {doctor.name}
+                  </h3>
 
+                  <p className={doctorsPageStyles.doctorSpecialization}>
+                    {doctor.specialization}
+                  </p>
+
+                  <div className={doctorsPageStyles.experienceBadge}>
+                    <Medal className={doctorsPageStyles.experienceIcon} />
+                    <span>{doctor.experience || "-"} years Experience</span>
+                  </div>
+
+                  {doctor.available ? (
+                    <Link
+                      to={`/doctors/${doctor.id}`}
+                      state={{ doctor: doctor.raw || doctor }}
+                      className={doctorsPageStyles.bookButton}
+                    >
+                      <ChevronRight
+                        className={doctorsPageStyles.bookButtonIcon}
+                      />
+                      Book Now
+                    </Link>
+                  ) : (
+                    <button
+                      disabled
+                      className={doctorsPageStyles.notAvailableButton}
+                    >
+                      <MousePointer2Off
+                        className={doctorsPageStyles.notAvailableIcon}
+                      />
+                      Not Available
+                    </button>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className={doctorsPageStyles.noResults}>
+                No doctors found matching your search criteria
+              </div>
+            )}
+          </div>
+        )}
+
+        {filteredDoctors.length > 8 && (
+          <div className={doctorsPageStyles.showMoreContainer}>
+            <button
+              onClick={() => setShowAll(!showAll)}
+              className={doctorsPageStyles.showMoreButton}
+            >
+              {showAll ? (
+                <>
+                  <CircleChevronUp className={doctorsPageStyles.showMoreIcon} />
+                  Hide
+                </>
+              ) : (
+                <>
+                  <CircleChevronDown
+                    className={doctorsPageStyles.showMoreIcon}
+                  />
+                  Show More
+                </>
+              )}
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Animations */}
+      <style>{`
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fade-in-up {
+          from { opacity: 0; transform: translateY(40px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slide-up {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fade-in 0.9s ease-out; }
+        .animate-fade-in-up { animation: fade-in-up 0.9s ease-out both; }
+        .animate-slide-up { animation: slide-up 0.8s ease-out; }
+
+        @media (max-width: 420px) {
+          .max-w-7xl { padding-left: 10px; padding-right: 10px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          * { animation: none !important; transition: none !important; }
+        }
+      `}</style>
     </div>
   );
 };
